@@ -20,20 +20,16 @@ public class WeatherController {
 	@Autowired
 	WeatherService weatherService;
 	
-	//@CrossOrigin
 	@RequestMapping(method = RequestMethod.GET, value = "/weather/{location}") 
     @ApiOperation(httpMethod = "GET", value = "Returns current weather in given location (name of the city)")
 	public List<Weather> getWeather(@PathVariable(value = "location") String location) {
 		
-		Weather weather =  new Weather("oulu", "2", "3", "e" ,"/icon.png", "2017-09-25 18:53");
-		List<Weather> weathers = new ArrayList<>();
-		weathers.add(weather);
-		return weathers;
 		
-		//return weatherService.getCurrentWeather(location);
+		
+		return weatherService.getCurrentWeather(location);
 		
 	}
-	//@CrossOrigin
+	
 	@RequestMapping(method = RequestMethod.GET, value = "/weather/{location}/{days}") 
     @ApiOperation(httpMethod = "GET", value = "Returns  weather forecast for next given days in given location (name of the city)")
 	public List<Weather> getWeatherForecast(@PathVariable(value = "location") String location
