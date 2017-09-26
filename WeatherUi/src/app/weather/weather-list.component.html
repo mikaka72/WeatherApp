@@ -1,0 +1,60 @@
+<div class='panel panel-primary'>
+        <div class='panel-heading'>
+           
+        </div>
+        <div class='panel-body'>
+            <div class='row'>
+                    <div class='col-md-1'>
+                        <input type='text' 
+                        [(ngModel)]='searchValue' />
+                    </div>
+                    <div class='col-md-2'>
+                            <button class='btn btn-primary'
+                            (click)='search()'> Search
+                            </button>
+                    </div>
+                    
+            </div>
+           
+            <div class='table-responsive'>
+                <table class='table'
+                       
+                        *ngIf='weathers && weathers.length'>
+                    <thead  align="left">
+                        <tr>
+                            
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Time</th>
+                            <th>Tempature</th>
+                            <th>Wind</th>
+                            <th>WindFrom</th>
+                           
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr align="left" *ngFor='let weather of weathers'>
+                           
+                            <td>{{ weather.location}} </td>
+                            <td>
+                                    <img 
+                                    [src]='weather.icon'
+                                    [style.width.px]='imageWidth'
+                                    [style.margin.px]='imageMargin'>
+                            </td>
+                            <td>{{ weather.weatherDate | date:'medium'}}</td>
+                            <td>{{ weather.tempature }} C</td>
+                            <td>{{ weather.wind }}</td>
+                            <td>{{ weather.windfrom }}</td>
+                            <td>
+                            
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+   
