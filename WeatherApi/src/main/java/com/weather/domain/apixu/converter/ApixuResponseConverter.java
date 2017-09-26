@@ -7,7 +7,7 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 import org.springframework.stereotype.Component;
 
-import com.weather.client.apixu.ApixuWeatherClient;
+import com.weather.client.ApixuWeatherClient;
 import com.weather.domain.Weather;
 import com.weather.domain.apixu.CurrentWeatherResponse;
 import com.weather.domain.apixu.ForecastResponse;
