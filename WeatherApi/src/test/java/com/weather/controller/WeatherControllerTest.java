@@ -19,9 +19,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
 import com.weather.domain.Weather;
-import com.weather.domain.apixu.converter.ApixuDateConverter;
 import com.weather.service.WeatherService;
 
 public class WeatherControllerTest {

@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class Astro {
 
+	
 	private String moonset;
 
     private String sunset;

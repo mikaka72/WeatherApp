@@ -8,13 +8,12 @@ import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.basic.DateConverter;
 import com.weather.domain.Weather;
 import com.weather.domain.apixu.CurrentWeatherResponse;
 import com.weather.domain.apixu.ForecastResponse;
-import com.weather.domain.apixu.converted.EpochTimeConverter;
-import com.weather.domain.apixu.converter.ApixuDateConverter;
+
+
+import com.weather.domain.apixu.converter.ApixuResponseConverter;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,11 +43,11 @@ public class ApixuWeatherClient implements WeatherClient{
 
 		String responseXml = Optional.ofNullable(
 				restTemplate.getForObject(currentWeatherEndpoint+location, String.class))
-				.orElseThrow(RuntimeException::new);
-		XStream xstream = getXStream();
-		xstream.alias("root",CurrentWeatherResponse.class);
-		CurrentWeatherResponse response = (CurrentWeatherResponse) xstream.fromXML(responseXml);
-
+				.orElseThrow( () -> new RuntimeException("No response"));
+		
+		CurrentWeatherResponse response = Optional.ofNullable(ApixuResponseConverter.getCurrentResponse(responseXml)).
+				orElseThrow( () -> new RuntimeException("Could not deserialize response xml"));
+		
 		weather  = new Weather(response.getLocation().getName(), 
 				response.getCurrent().getTemp_c(),
 				response.getCurrent().getWind_kph(), 
@@ -69,11 +68,11 @@ public class ApixuWeatherClient implements WeatherClient{
 				restTemplate.getForObject(forecastEndpoint+location+"&days="+days, String.class))
 				.orElseThrow(RuntimeException::new);
 		log.info("Response: " +responseXml);
-		XStream xstream = getXStream();
-		xstream.registerConverter(new DateConverter("yyyy-MM-dd", new String[]{"yyyy-MM-dd"}));
-		xstream.registerConverter( new EpochTimeConverter());
-		xstream.alias("root",ForecastResponse.class);
-		ForecastResponse response = (ForecastResponse)xstream.fromXML(responseXml);
+		
+		
+		ForecastResponse response = Optional.ofNullable(ApixuResponseConverter.getForecastResponse(responseXml)).
+			orElseThrow( () -> new RuntimeException("Could not deserialize response xml"));
+		
 		/*
 		response.getForecast().getForecastday().forEach(forecastday -> {
 			log.info(forecastday.getDate().toString());
@@ -82,15 +81,5 @@ public class ApixuWeatherClient implements WeatherClient{
 		return null;
 		
 	}
-	
-	private XStream getXStream() {
-		XStream xstream = new XStream();
-		// Set default security with only apixu package classes to be deserialized
-		XStream.setupDefaultSecurity(xstream);
-		xstream.allowTypesByWildcard(new String[] {"com.weather.domain.apixu.**"});
-		return xstream;
-	}
-	
-	
 	
 }
