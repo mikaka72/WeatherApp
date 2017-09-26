@@ -13,6 +13,13 @@
                             (click)='search()'> Search
                             </button>
                     </div>
+
+                    <div class='col-md-3' *ngIf='weathers && weathers.length==1'>
+                        <button class='btn btn-primary'
+
+                        (click)='nextTenDays()'> View next 10 days by hour in {{searchValue}}
+                        </button>
+                    </div>
                     
             </div>
            

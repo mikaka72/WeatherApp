@@ -27,6 +27,15 @@ export class WeatherListComponent{
             this.weathers = weathers;
         }, error => this.errorMessage = <any>error);
     }
+
+    nextTenDays():void{
+        console.log("Search next 10 days for " + this.searchValue);
+        this._weatherService.getWeatherForNextDays(this.searchValue, 10)
+        .subscribe(weathers => {
+            this.weathers = weathers;
+        }, error => this.errorMessage = <any>error);
+        
+    }
     
     ngOnInit(): void {
         this._weatherService.getWeather(this.searchValue)

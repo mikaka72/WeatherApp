@@ -20,6 +20,11 @@ export class WeatherService {
             .catch(this.handleError);
     }
 
+    getWeatherForNextDays(searchValue : string, days : number): Observable<Weather[]> {
+        return this._http.get<Weather[]>(this._serviceUrl+searchValue+"/"+days)
+            .do(data => console.log('All: ' + JSON.stringify(data)))
+            .catch(this.handleError);
+    }
 
     private handleError(err: HttpErrorResponse) {
         let errorMessage = '';
