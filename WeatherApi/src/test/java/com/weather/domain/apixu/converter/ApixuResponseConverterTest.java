@@ -14,23 +14,31 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.util.ResourceUtils;
 
+import com.weather.domain.Weather;
 import com.weather.domain.apixu.CurrentWeatherResponse;
 import com.weather.domain.apixu.ForecastResponse;
 import com.weather.domain.apixu.Forecastday;
 
 public class ApixuResponseConverterTest {
 	
+	private  ApixuResponseConverter apixuResponseConverter;
+	
+	@Before
+	public void init() {
+		apixuResponseConverter = new ApixuResponseConverter();
+	}
 	
 	@Test
 	public void testConvertCurrent() throws Exception {
 		String xml = getXml("Current.xml");
 		
 		//CurrentWeatherResponse response = ApixuResponseConverter.getCurrentResponse(xml);
-		CurrentWeatherResponse response = ApixuResponseConverter.getCurrentResponse(xml);
+		CurrentWeatherResponse response = apixuResponseConverter.getCurrentResponse(xml);
 		assertEquals("oulu", response.getLocation().getName().toLowerCase());
 		assertEquals("finland", response.getLocation().getCountry().toLowerCase());
 		assertEquals("8", response.getCurrent().getTemp_c());
@@ -39,13 +47,23 @@ public class ApixuResponseConverterTest {
 		assertEquals("6.1", response.getCurrent().getWind_kph());
 		assertEquals("//cdn.apixu.com/weather/64x64/day/143.png", response.getCurrent().getCondition().getIcon());
 		
+		List<Weather> weathers = apixuResponseConverter.getCurrentWeatherList(response);
+		assertEquals(1, weathers.size());
+		Weather w = weathers.get(0);
+		assertEquals("oulu", w.getLocation().toLowerCase());
+		assertEquals("8", w.getTempature());
+		assertEquals("2017-09-26 14:32", w.getWeatherDate());
+		assertEquals("S", w.getWindfrom());
+		assertEquals("6.1", w.getWind());
+		assertEquals("//cdn.apixu.com/weather/64x64/day/143.png", w.getIcon());
+		
 	}
 	
 	@Test
 	public void testConvertCurrentWithInvalidXML() throws Exception {
 		String xml = "<root><bogus><bogus></root>";
 		
-		assertNull(ApixuResponseConverter.getCurrentResponse(xml));
+		assertNull(apixuResponseConverter.getCurrentResponse(xml));
 		
 	}
 	
@@ -53,7 +71,7 @@ public class ApixuResponseConverterTest {
 	public void testConvertForecast() throws Exception {
 		String xml = getXml("Forecast.xml");
 		
-		ForecastResponse response = ApixuResponseConverter.getForecastResponse(xml);
+		ForecastResponse response = apixuResponseConverter.getForecastResponse(xml);
 		
 		assertEquals(2, response.getForecast().getForecastday().size());
 		
@@ -66,6 +84,16 @@ public class ApixuResponseConverterTest {
 			});
 		});
 		
+		List<Weather> weathers = apixuResponseConverter.getForecastList(response);
+		
+		weathers.forEach(weather->{
+			assertEquals("oulu", weather.getLocation().toLowerCase());
+			assertTrue( !weather.getTempature().isEmpty());
+			assertTrue( !weather.getIcon().isEmpty());
+			assertTrue( !weather.getWeatherDate().isEmpty());
+			assertTrue( !weather.getWind().isEmpty());
+			assertTrue( !weather.getWindfrom().isEmpty());
+		});
 		
 	}
 	
@@ -73,7 +101,7 @@ public class ApixuResponseConverterTest {
 	public void testConvertForecastWithInvalidXML() throws Exception {
 		String xml = "<root><bogus><bogus></root>";
 		
-		assertNull(ApixuResponseConverter.getForecastResponse(xml));
+		assertNull(apixuResponseConverter.getForecastResponse(xml));
 		
 	}
 	
