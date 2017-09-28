@@ -4,20 +4,27 @@ import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { WeatherListComponent } from './weather/weather-list.component'
 import { WeatherService } from './weather/weather.service'
+import { LoginService } from './login/login.service'
 import { HttpClientModule } from '@angular/common/http'
- 
+
+
+
+
 
 @NgModule({
   declarations: [
     AppComponent,
-    WeatherListComponent
+    WeatherListComponent,
+    
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+   
+    
   ],
-  providers: [WeatherService],
+  providers: [WeatherService,  LoginService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { WeatherService} from './weather.service';
+import { LoginService } from '../login/login.service';
+import { tokenNotExpired } from 'angular2-jwt';
 
 @Component({
     selector: 'weather-weathers',
     templateUrl: './weather-list.component.html',
-    styleUrls: ['./weather-list.component.css']
+    styleUrls: ['./weather-list.component.css'],
+    providers: [WeatherService, LoginService ]
 })
 
 export class WeatherListComponent{
@@ -15,7 +18,13 @@ export class WeatherListComponent{
 
     errorMessage : string;
 
-    constructor(private _weatherService: WeatherService) {
+    username : string = "user";
+
+    password : string = "jwtpass";
+
+    loggedIn : boolean = tokenNotExpired(localStorage.getItem('id_token'));
+
+    constructor(private _weatherService: WeatherService, private _loginService: LoginService) {
         
     }
     
@@ -29,6 +38,7 @@ export class WeatherListComponent{
     }
 
     nextTenDays():void{
+      //  this.doLogin();
         console.log("Search next 10 days for " + this.searchValue);
         this._weatherService.getWeatherForNextDays(this.searchValue, 10)
         .subscribe(weathers => {
@@ -45,5 +55,20 @@ export class WeatherListComponent{
                 },
         error => this.errorMessage = <any>error);
     }
+
+    doLogin():void{
+    
+        console.log("login");
+        this._loginService.login(this.username, this.password);
+        console.log("Token from localStorage: "+ localStorage.getItem('id_token'));
+          
+       
+
+    }
+
+    public logout() {
+        localStorage.removeItem('id_token');
+     }
+   
 
 }

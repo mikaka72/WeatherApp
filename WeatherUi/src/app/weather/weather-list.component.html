@@ -1,8 +1,11 @@
 <div class='panel panel-primary'>
         <div class='panel-heading'>
-           
+            
+
         </div>
         <div class='panel-body'>
+            <div class='panel-heading'>
+                </div>
             <div class='row'>
                     <div class='col-md-1'>
                         <input type='text' 
@@ -10,16 +13,17 @@
                     </div>
                     <div class='col-md-2'>
                             <button class='btn btn-primary'
-                            (click)='search()'> Search
+                            (click)='search()'> Get Current Weather
                             </button>
                     </div>
 
                     <div class='col-md-3' *ngIf='weathers && weathers.length==1'>
                         <button class='btn btn-primary'
 
-                        (click)='nextTenDays()'> View next 10 days by hour in {{searchValue}}
+                        (click)='nextTenDays()'> 10 Days Weather In {{searchValue}}
                         </button>
                     </div>
+                    
                     
             </div>
            
