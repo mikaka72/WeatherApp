@@ -24,13 +24,11 @@ public class WeatherController {
     @ApiOperation(httpMethod = "GET", value = "Returns current weather in given location (name of the city)")
 	public List<Weather> getWeather(@PathVariable(value = "location") String location) {
 		
-		
-		
 		return weatherService.getCurrentWeather(location);
 		
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, value = "/weather/{location}/{days}") 
+	@RequestMapping(method = RequestMethod.GET, value = "/weather/forecast/{location}/{days}") 
     @ApiOperation(httpMethod = "GET", value = "Returns  weather forecast for next given days in given location (name of the city)")
 	public List<Weather> getWeatherForecast(@PathVariable(value = "location") String location
 			,@PathVariable(value = "days") int  days) {

@@ -1,7 +1,13 @@
 package com.weather.client;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.Proxy.Type;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -20,11 +26,22 @@ public class ApixuWeatherClient implements WeatherClient{
 	private final ApixuResponseConverter apixuResponseConverter;
 	private final ApixuConnectionUrlBuilder apixuConnectionUrlBuilder;
 
+	private String proxyUrl="";
+	private int port;
+	
+
+	
 	public ApixuWeatherClient(final ApixuResponseConverter apixuResponseConverter, 
-			ApixuConnectionUrlBuilder apixuConnectionUrlBuilder) {
-		restTemplate = new RestTemplate();
+			ApixuConnectionUrlBuilder apixuConnectionUrlBuilder,
+			@Value("${com.weather.service.apixu.proxy.url}") String proxyUrl,
+			@Value("${com.weather.service.apixu.proxy.port}") int port
+			) {
 		this.apixuResponseConverter = apixuResponseConverter;
 		this.apixuConnectionUrlBuilder = apixuConnectionUrlBuilder;
+		this.proxyUrl = proxyUrl;
+		this.port = port;
+		
+		restTemplate = getRestTemplate();
 	}
 
 	@Override
@@ -56,6 +73,19 @@ public class ApixuWeatherClient implements WeatherClient{
 		
 		return apixuResponseConverter.getForecastList(response);
 		
+	}
+	
+	private RestTemplate getRestTemplate() {
+		RestTemplate template = null;
+		if(!proxyUrl.isEmpty()) {
+			SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+		    Proxy proxy= new Proxy(Type.HTTP, new InetSocketAddress(proxyUrl, port));
+		    requestFactory.setProxy(proxy);
+		    template = new RestTemplate(requestFactory);
+		} else {
+			template = new RestTemplate();
+		} 
+		return template;
 	}
 	
 }
