@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
@@ -52,7 +53,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .and()
         .authorizeRequests()
         .antMatchers("/api/v1/weather/*").permitAll()
-        //.antMatchers("/api/v1/weather/forecast/*/*").permitAll()
+        .antMatchers("/api/v1/weather/forecast/*/*").permitAll()
+        .antMatchers(HttpMethod.OPTIONS, "/oauth/token").permitAll()
         .and()
         .httpBasic()
         .realmName(SECURITY_REALM)

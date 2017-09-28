@@ -56,7 +56,50 @@ public class WeatherControllerTest {
 		.andExpect(jsonPath("$.[0]", hasKey("weatherDate")));
 	
 	}
+	
+	@Test
+	public void testGetForecastWeather() throws Exception {
 
+		when(weatherService.getWeatherForecast("oulu", 10)).thenReturn(createMockWeatherList());
+		
+		mockMvc.perform(get("/api/v1/weather/forecast/oulu/10"))
+		.andExpect(status().isOk())
+		.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+		.andExpect(jsonPath("$.[0]", hasKey("location")))
+		.andExpect(jsonPath("$.[0]", hasKey("tempature")))
+		.andExpect(jsonPath("$.[0]", hasKey("wind")))
+		.andExpect(jsonPath("$.[0]", hasKey("windfrom")))
+		.andExpect(jsonPath("$.[0]", hasKey("icon")))
+		.andExpect(jsonPath("$.[0]", hasKey("weatherDate")));
+	
+	}
+
+	@Test
+	public void testGetCurrentWeatherFailure() throws Exception {
+
+		when(weatherService.getCurrentWeather("oulu")).thenThrow( new RuntimeException());
+		
+		mockMvc.perform(get("/api/v1/weather/oulu"))
+		.andExpect(status().isOk())
+		.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+		.andExpect(jsonPath("$", hasKey("errorCode")))
+		.andExpect(jsonPath("$", hasKey("message")));
+	
+	}
+	
+	@Test
+	public void testGetForecastWeatherFailure() throws Exception {
+
+		when(weatherService.getWeatherForecast("oulu", 10)).thenThrow( new RuntimeException());
+		
+		mockMvc.perform(get("/api/v1/weather/forecast/oulu/10"))
+		.andExpect(status().isOk())
+		.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+		.andExpect(jsonPath("$", hasKey("errorCode")))
+		.andExpect(jsonPath("$", hasKey("message")));
+	
+	}
+	
 	private List<Weather> createMockWeatherList(){
 		
 		Weather weather =  new Weather("oulu", "2", "3", "e" ,"/icon.png", "2017-09-25 18:53");
