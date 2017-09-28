@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -31,6 +32,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 
 @Configuration
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	static final String SIGNING_KEY = "th3whe4ther4p1";
@@ -42,17 +45,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		// Include cors, access only from localhost:4200.
-		// Add current weather endpoint to be permitted for all, forecast will need authentication
-		http.cors();
-		http.headers().frameOptions().disable();
-		http.authorizeRequests()
-        .antMatchers("/api/v1/weather/*").permitAll()
-        .antMatchers("/api/v1/weather/forecast/*/*").permitAll()
-        .antMatchers("/h2/*").permitAll()
-        .anyRequest().authenticated()
+		
+		http
+        .sessionManagement()
+        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
-        .formLogin().permitAll();
+        .authorizeRequests()
+        .antMatchers("/api/v1/weather/*").permitAll()
+        //.antMatchers("/api/v1/weather/forecast/*/*").permitAll()
+        .and()
+        .httpBasic()
+        .realmName(SECURITY_REALM)
+		.and()
+        .csrf()
+        .disable();
 		
 		
 	}
@@ -68,20 +74,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		
 	}
 	
+	
 
-	@Bean
-	CorsConfigurationSource corsConfigurationSource() {
-		// Allow calls from localhost only for now...
-		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
-		configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT"));
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-		return source;
-	}
-	
-	
-	
 	@Bean
 	@Override
 	public AuthenticationManager authenticationManagerBean() throws Exception {
